@@ -87,6 +87,34 @@ Consulta [SECURITY.md](SECURITY.md) para comunicar un problema de seguridad sin 
 
 ## Validación
 
+### Datos de demostración
+
+Para cargar ocho informes ficticios con sus PDF y un historial de ejemplo, configura `SECRET_KEY` e `INITIAL_ADMIN_PASSWORD` como se indica en la instalación y ejecuta:
+
+```powershell
+.\.venv\Scripts\python.exe scripts/cargar_demo.py
+```
+
+La cuenta creada es `admin.demo` y utiliza la contraseña que configuraste, con cambio obligatorio al ingresar. No se distribuye ninguna contraseña de demostración. Los responsables de estos ejemplos usan la configuración predeterminada `Responsable TI`.
+
+En esta copia local, la configuración nueva de la demostración está guardada en `.env.demo`, excluido de Git. Puedes cargarla en PowerShell sin imprimir sus valores y luego iniciar la aplicación:
+
+```powershell
+Get-Content .env.demo | ForEach-Object {
+    $nombre, $valor = $_ -split '=', 2
+    if ($nombre -in @('SECRET_KEY', 'INITIAL_ADMIN_PASSWORD', 'RESPONSABLES_TI')) {
+        [Environment]::SetEnvironmentVariable($nombre, $valor, 'Process')
+    }
+}
+.\.venv\Scripts\python.exe app.py
+```
+
+Ese archivo local no se incluye al clonar el repositorio. Para una instalación nueva, configura tus propias variables siguiendo los pasos anteriores.
+
+Si ya hay datos, el script se detiene. La opción `--reemplazar` elimina definitivamente la base y los adjuntos locales antes de instalar los ejemplos; detén primero la aplicación. Los datos generados permanecen excluidos de Git: se publica el generador, no la base de datos.
+
+### Pruebas automatizadas
+
 ```powershell
 .\.venv\Scripts\python.exe -m unittest discover -s tests -v
 ```
@@ -103,4 +131,4 @@ Con el servidor detenido, copia juntos `incidentes.db` y `uploads/` a una ubicac
 
 El repositorio público debe contener exclusivamente código, documentación y recursos de interfaz. `.gitignore` excluye bases, adjuntos, logs, entornos virtuales y secretos locales. No arrastres toda la carpeta al navegador de GitHub: la carga manual no aplica las exclusiones de Git.
 
-Antes de publicar, revisa los archivos del commit y usa únicamente el historial limpio preparado para esta edición. El historial anterior contiene información privada y no debe enviarse con `git push --all` o `git push --mirror`. Eliminar un repositorio remoto no limpia el historial de una copia local.
+Antes de publicar, revisa los archivos del commit y utiliza únicamente el historial limpio de esta edición. Eliminar un repositorio remoto no limpia por sí solo el historial de una copia local. No publiques respaldos de versiones anteriores.
