@@ -15,7 +15,7 @@ let reports, selected, notification;
 function resetData() {
   reports = examples.map(([equipment, sector, state, description], i) => ({
     id: `DEMO-${String(i + 1).padStart(4, "0")}`, equipment, sector, state, description,
-    date: `2026-01-${String(10 + i * 2).padStart(2, "0")}`,
+    date: `2026-01-${String(13 + i * 3).padStart(2, "0")}`,
     history: ["Registro de ejemplo creado · Responsable TI"]
   }));
 }
@@ -27,10 +27,10 @@ function element(tag, value, className) {
 }
 function render() {
   $("total").textContent = reports.length;
-  for (const [state, id] of Object.entries(states)) $(id).textContent = reports.filter(r => r.state === state).length;
+  renderStats();
   const query = $("search").value.trim().toLocaleLowerCase("es");
   const state = $("status").value;
-  const visible = reports.filter(r => (!state || r.state === state) && [r.id,r.equipment,r.sector,r.description].join(" ").toLocaleLowerCase("es").includes(query));
+  const visible = reports.filter(r => (!state || r.state === state || (state === "abiertos" && r.state !== "Archivado")) && [r.id,r.equipment,r.sector,r.description].join(" ").toLocaleLowerCase("es").includes(query));
   $("rows").replaceChildren();
   visible.forEach(report => {
     const row = element("tr"), heading = element("td");
@@ -68,9 +68,53 @@ $("detail-status").addEventListener("change", (event) => {
   const next = event.target.value;
   if (!Object.hasOwn(states, next) || !selected) return;
   selected.history.unshift(`${selected.state} → ${next} · Cambio simulado`);
-  selected.state = next; renderHistory(); render(); announce("Estado actualizado en la demostración.");
+  selected.state = next; edits++; $("activity").prepend(element("li", `${selected.id}: ${next} ? Administrador de demostraci?n`)); renderHistory(); render(); announce("Estado actualizado en la demostración.");
 });
 $("reset").addEventListener("click", () => {
-  resetData(); $("search").value = ""; $("status").value = ""; render(); announce("La demo volvió a sus datos iniciales.");
+  edits = 0; $("activity").replaceChildren(element("li", "Demostraci?n restablecida.")); resetData(); $("search").value = ""; $("status").value = ""; render(); announce("La demo volvió a sus datos iniciales.");
 });
+let edits = 0;
+function renderStats() {
+  const solved = reports.filter(r => r.state === "Archivado");
+  const remaining = reports.length - solved.length;
+  const percent = reports.length ? Math.round(solved.length / reports.length * 100) : 0;
+  $("archived").textContent = solved.length;
+  $("remaining").textContent = remaining;
+  $("percentage").textContent = $("chart-percent").textContent = `${percent}%`;
+  $("solved-count").textContent = solved.length;
+  $("remaining-count").textContent = remaining;
+  $("donut-value").setAttribute("stroke-dasharray", `${percent} 100`);
+  const latest = solved.at(-1);
+  $("latest-id").textContent = latest ? latest.id : "Sin soluciones registradas";
+  $("latest-date").textContent = latest ? `${latest.date} 10:00:00` : "";
+  $("latest-open").disabled = !latest;
+  $("latest-open").onclick = () => latest && openDetail(latest.id);
+  const users = [
+    {name:"Administrador de demostraci?n", handle:"admin.demo", role:"Administrador", total:reports.length, solved:solved.length, edits},
+    {name:"Usuario de demostraci?n", handle:"user.demo", role:"Editor", total:0, solved:0, edits:0}
+  ];
+  $("user-bars").replaceChildren();
+  users.forEach(user => {
+    const row = element("div", undefined, "bar-row");
+    const name = element("div"); name.append(element("strong", user.name), element("small", `@${user.handle} ? ${user.role}`));
+    const bars = element("div", undefined, "bars");
+    [["Ingresados", user.total], ["Solucionados", user.solved]].forEach(([label, count]) => {
+      const line = element("div", undefined, "bar-line");
+      const progress = element("progress"); progress.max = Math.max(reports.length, 1); progress.value = count;
+      progress.setAttribute("aria-label", `${label} por ${user.name}`);
+      line.append(element("span", label), progress, element("span", count)); bars.append(line);
+    });
+    row.append(name, bars); $("user-bars").append(row);
+  });
+  $("user-rows").replaceChildren();
+  const query = $("user-search").value.toLocaleLowerCase("es");
+  users.filter(u => `${u.name} ${u.handle} ${u.role}`.toLocaleLowerCase("es").includes(query)).slice(0, Number($("user-limit").value)).forEach(user => {
+    const row = element("tr"), name = element("td"); name.append(element("strong", user.name), element("small", `@${user.handle}`)); row.append(name);
+    [user.role, user.total, user.solved, user.edits, 0, user.total + user.edits, user.total ? "2026-02-03 10:00:00" : "?"].forEach(value => row.append(element("td", value)));
+    $("user-rows").append(row);
+  });
+}
+$("user-search").addEventListener("input", renderStats);
+$("user-limit").addEventListener("change", renderStats);
+document.querySelectorAll("[data-filter]").forEach(link => link.addEventListener("click", () => { $("search").value = ""; $("status").value = link.dataset.filter; render(); }));
 resetData(); render();
