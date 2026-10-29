@@ -6,7 +6,7 @@ Desarrollé esta aplicación para organizar informes de soporte TI, asociar sus 
 
 Esta es su edición pública de portafolio, preparada con información ficticia para mostrar el funcionamiento sin exponer datos internos.
 
-![Vista de la demo interactiva del gestor de informes TI](docs/preview.png)
+![Estad?sticas de soluciones de la aplicaci?n original con datos ficticios](docs/preview.png)
 
 ## Qué problema resuelve
 
@@ -25,7 +25,7 @@ La cuenta `user.demo` puede ver el dashboard y crear, consultar, editar y elimin
 
 ## Demo interactiva
 
-[**Explorar la demo →**](https://arojases.github.io/Incidentes/)
+[**Explorar la demo →**](https://arojases.github.io/Gestion-de-Incidentes/)
 
 La demo permite buscar informes ficticios, abrir su detalle, simular un cambio de estado y ver cómo se actualiza el resumen. Funciona sin cuenta ni contraseña y puedes restablecer los ejemplos en cualquier momento.
 

@@ -25,9 +25,9 @@ Después de subir los archivos al repositorio público:
 3. Elige la rama donde subiste el proyecto, normalmente `main`, y la carpeta `/docs`.
 4. Guarda los cambios y espera a que GitHub indique que la página está publicada.
 
-Para el repositorio `arojases/Incidentes`, la dirección esperada es:
+Para el repositorio `arojases/Gestion-de-Incidentes`, la dirección esperada es:
 
-<https://arojases.github.io/Incidentes/>
+<https://arojases.github.io/Gestion-de-Incidentes/>
 
 Si cambias el propietario o el nombre del repositorio, actualiza los enlaces del README y de `docs/index.html`. El enlace del README está preparado para esa dirección; no implica que la demo ya esté publicada.
 
