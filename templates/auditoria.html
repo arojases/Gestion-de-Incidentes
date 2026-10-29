@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Historial{% endblock %}
+{% block content %}
+<div class="encabezado"><div><h1>Historial</h1><p>Últimos 500 cambios realizados.</p></div></div>
+<section class="panel tabla-scroll"><table class="tabla-interactiva" data-page-size="10" data-search-placeholder="Filtrar historial...">
+  <thead><tr><th>Fecha</th><th>Usuario</th><th>Acción</th><th>Tipo de registro</th><th>Cambios realizados</th></tr></thead>
+  <tbody>{% for r in registros %}{% set cambios = r.detalle|detalle_auditoria %}<tr>
+    <td>{{ r.fecha }}</td><td>{{ r.usuario_nombre }}</td><td>{{ r.accion|replace('_', ' ')|capitalize }}</td><td>{{ r.entidad|capitalize }}</td>
+    <td>{% if cambios %}<details><summary>Ver cambios</summary><pre>{{ cambios|tojson(indent=2) }}</pre></details>{% elif r.accion == 'cambio_clave' %}<span class="detalle-seguro">Contraseña actualizada. Su contenido no se registra por seguridad.</span>{% else %}<span class="detalle-seguro">Evento registrado sin cambios de campos.</span>{% endif %}</td>
+  </tr>{% endfor %}</tbody>
+</table></section>
+{% endblock %}

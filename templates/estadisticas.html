@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Estadísticas de soluciones{% endblock %}
+{% block content %}
+<div class="encabezado"><div><h1>Estadísticas de soluciones</h1><p>Tickets ingresados, reparaciones y resultados por usuario.</p></div></div>
+
+<section class="tarjetas estadisticas-tarjetas kpi-tarjetas">
+  <a class="tarjeta kpi" href="{{ url_for('lista_informes') }}"><span>Total de tickets</span><strong>{{ total_informes }}</strong><small>Ver todos →</small></a>
+  <a class="tarjeta archivado kpi" href="{{ url_for('lista_informes', estado='Archivado') }}"><span>Solucionados / reparados</span><strong>{{ total_solucionados }}</strong><small>Ver solucionados →</small></a>
+  <a class="tarjeta pendiente kpi" href="{{ url_for('lista_informes', estado='abiertos') }}"><span>Pendientes o en revisión</span><strong>{{ total_pendientes }}</strong><small>Ver pendientes →</small></a>
+  <a class="tarjeta revision kpi" href="#resultado-general"><span>Porcentaje resuelto</span><strong>{{ porcentaje_resuelto }}%</strong><small>Ver gráfico ↓</small></a>
+</section>
+
+<section class="panel graficos-principales" id="resultado-general">
+  <div class="grafico-resolucion">
+    <h2>Resultado general</h2>
+    <div class="donut" style="--porcentaje: {{ porcentaje_resuelto }}"><div><strong>{{ porcentaje_resuelto }}%</strong><span>resuelto</span></div></div>
+    <div class="leyenda"><span><i class="punto solucionado"></i> Solucionados: {{ total_solucionados }}</span><span><i class="punto pendiente"></i> Restantes: {{ total_pendientes }}</span></div>
+  </div>
+  <div class="ultimo-ticket">
+    <span class="sobrelinea">Última solución registrada</span>
+    {% if ultimo_solucionado %}<h2>{{ ultimo_solucionado.numero_informe }}</h2><p>Solucionado por <strong>{{ ultimo_solucionado.usuario_nombre }}</strong></p><p>{{ ultimo_solucionado.fecha }}</p><a class="boton secundario" href="{{ url_for('detalle_informe', informe_id=ultimo_solucionado.entidad_id) }}">Ver informe</a>
+    {% else %}<h2>Aún no hay soluciones atribuidas</h2><p>Se mostrará aquí el próximo ticket que un usuario cambie a Archivado.</p>{% endif %}
+  </div>
+</section>
+
+{% if sin_atribuir %}<div class="alerta informacion">Hay {{ sin_atribuir }} informe(s) creado(s) antes de habilitar usuarios. Su creación no puede atribuirse retroactivamente.</div>{% endif %}
+
+<section class="panel">
+  <div class="titulo-panel"><h2>Tickets y soluciones por usuario</h2></div>
+  <div class="leyenda leyenda-barras"><span><i class="punto ingreso"></i> Ingresados</span><span><i class="punto solucionado"></i> Solucionados</span></div>
+  {% if resumen %}<div class="comparacion-usuarios">
+    {% for u in resumen %}<div class="comparacion-fila">
+      <div class="ranking-nombre"><strong>{{ u.nombre }}</strong><small>@{{ u.username }} · {{ roles[u.rol] }}</small></div>
+      <div class="serie"><span>Ingresados</span><div class="barra-progreso ingreso"><i style="width: {{ (u.ingresados * 100 / max_grafico)|round if max_grafico else 0 }}%"></i></div><strong>{{ u.ingresados }}</strong></div>
+      <div class="serie"><span>Solucionados</span><div class="barra-progreso solucion"><i style="width: {{ (u.solucionados * 100 / max_grafico)|round if max_grafico else 0 }}%"></i></div><strong>{{ u.solucionados }}</strong></div>
+    </div>{% endfor %}
+  </div>{% else %}<p class="vacio">No hay usuarios registrados.</p>{% endif %}
+</section>
+
+<section class="panel tabla-scroll"><div class="titulo-panel"><h2>Totales finales por usuario</h2></div><table class="tabla-interactiva" data-page-size="10" data-search-placeholder="Filtrar usuarios...">
+  <thead><tr><th>Usuario</th><th>Rol</th><th>Ingresados</th><th>Solucionados</th><th>Ediciones</th><th>Eliminaciones</th><th>Actividad total</th><th>Última actividad</th></tr></thead>
+  <tbody>{% for u in resumen %}<tr><td><strong>{{ u.nombre }}</strong><small>@{{ u.username }}{% if not u.activo %} · Inactivo{% endif %}</small></td><td>{{ roles[u.rol] }}</td><td>{{ u.ingresados }}</td><td><strong>{{ u.solucionados }}</strong></td><td>{{ u.ediciones }}</td><td>{{ u.eliminados }}</td><td>{{ u.actividad }}</td><td>{{ u.ultima_actividad or 'Sin actividad' }}</td></tr>{% endfor %}
+  <tr class="fila-total"><td colspan="2">Totales actuales</td><td>{{ atribuidos }}</td><td>{{ total_solucionados }}</td><td colspan="4">{{ total_informes }} tickets en el sistema</td></tr></tbody>
+</table></section>
+
+{% if actividad_mes %}<section class="panel"><div class="titulo-panel"><h2>Tickets ingresados por mes</h2></div><div class="meses">{% for m in actividad_mes %}<div><span>{{ m.mes }}</span><strong>{{ m.cantidad }}</strong></div>{% endfor %}</div></section>{% endif %}
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends 'base.html' %}{% block title %}{{ informe.numero_informe }}{%
+endblock %} {% block content %}
+<section class="encabezado">
+  <div>
+    <p class="sobrelinea">INC-{{ '%04d'|format(informe.id) }}</p>
+    <h1>Informe {{ informe.numero_informe }}</h1>
+    <span
+      class="estado {{ informe.estado|lower|replace(' ', '-')|replace('ó','o') }}"
+      >{{ informe.estado }}</span
+    >
+  </div>
+  <div class="acciones">
+    {% if g.usuario.rol in ('admin', 'editor') %}<a
+      class="boton secundario"
+      href="{{ url_for('editar_informe', informe_id=informe.id) }}"
+      >Editar</a>{% endif %}<a
+      class="boton"
+      target="_blank"
+      href="{{ url_for('abrir_pdf', informe_id=informe.id) }}"
+      >Abrir PDF</a
+    >
+  </div>
+</section>
+<section class="panel detalle-grid">
+  <div>
+    <span>Número de informe</span><strong>{{ informe.numero_informe }}</strong>
+  </div>
+  <div>
+    <span>Fecha del incidente</span
+    ><strong>{{ informe.fecha_incidente }}</strong>
+  </div>
+  <div><span>Sector</span><strong>{{ informe.sector }}</strong></div>
+  <div>
+    <span>Equipo afectado</span><strong>{{ informe.equipo_afectado }}</strong>
+  </div>
+  <div>
+    <span>Serie del equipo</span
+    ><strong>{{ informe.numero_equipo or 'No informada' }}</strong>
+  </div>
+  <div>
+    <span>Responsable TI</span
+    ><strong>{{ informe.responsable_ti or 'No informado' }}</strong>
+  </div>
+  <div>
+    <span>Fecha de ingreso</span><strong>{{ informe.fecha_ingreso }}</strong>
+  </div>
+  <div class="ancho">
+    <span>Observaciones internas</span>
+    <p>{{ informe.observaciones or 'Sin observaciones.' }}</p>
+  </div>
+  <div class="ancho archivo">
+    <span>Archivo adjunto</span><strong>{{ informe.pdf_nombre }}</strong>
+    <div>
+      <a
+        target="_blank"
+        href="{{ url_for('abrir_pdf', informe_id=informe.id) }}"
+        >Abrir</a
+      >
+      ·
+      <a href="{{ url_for('abrir_pdf', informe_id=informe.id, descargar=1) }}"
+        >Descargar</a
+      >
+    </div>
+  </div>
+  <div><span>Creado</span><strong>{{ informe.fecha_creacion }}</strong></div>
+  <div>
+    <span>Última modificación</span
+    ><strong>{{ informe.fecha_modificacion }}</strong>
+  </div>
+</section>
+<section class="panel"><div class="titulo-panel"><h2>Historial de cambios</h2></div>{% if historial %}<div class="tabla-scroll"><table><thead><tr><th>Fecha</th><th>Usuario</th><th>Acción</th><th>Detalle</th></tr></thead><tbody>{% for h in historial %}<tr><td>{{ h.fecha }}</td><td>{{ h.usuario_nombre }}</td><td>{{ h.accion|capitalize }}</td><td><details><summary>Ver cambios</summary><pre>{{ (h.detalle|detalle_auditoria)|tojson(indent=2) }}</pre></details></td></tr>{% endfor %}</tbody></table></div>{% else %}<p class="vacio">Este informe aún no tiene eventos de auditoría.</p>{% endif %}</section>
+<div class="acciones">
+  <a class="boton secundario" href="{{ url_for('lista_informes') }}"
+    >Volver a informes</a
+  >
+  {% if g.usuario.rol == 'admin' %}<form
+    method="post"
+    action="{{ url_for('eliminar_informe', informe_id=informe.id) }}"
+    onsubmit="
+      return confirm(
+        '¿Seguro que deseas eliminar este informe? Esta acción no se puede deshacer.',
+      );
+    "
+  >
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button class="boton peligro">Eliminar informe</button>
+  </form>{% endif %}
+</div>
+{% endblock %}

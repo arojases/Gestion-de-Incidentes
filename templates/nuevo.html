@@ -1,0 +1,18 @@
+{% extends 'base.html' %}{% block title %}Nuevo informe{% endblock %} {% block
+content %}
+<div class="encabezado">
+  <div>
+    <h1>Nuevo informe</h1>
+    <p>Registra la ficha corta y adjunta el PDF original.</p>
+  </div>
+</div>
+<form class="panel formulario" method="post" enctype="multipart/form-data">
+  {% set datos=datos %}{% set pdf_obligatorio=true %}{% include
+  '_formulario.html' %}
+  <div class="acciones">
+    <a class="boton secundario" href="{{ url_for('lista_informes') }}"
+      >Cancelar</a
+    ><button class="boton" type="submit">Guardar informe</button>
+  </div>
+</form>
+{% endblock %}

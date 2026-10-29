@@ -1,0 +1,41 @@
+<input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+<div class="form-grid">
+  <label>Número de informe o investigación *
+    <input name="numero_informe" value="{{ datos.numero_informe or '' }}" required maxlength="100">
+  </label>
+  <label>Fecha del incidente *
+    <input type="date" name="fecha_incidente" value="{{ datos.fecha_incidente or '' }}" required>
+  </label>
+  <label>Estado *
+    <select name="estado" required>
+      <option value="">Seleccionar</option>
+      {% for e in estados %}
+      <option value="{{ e }}" {% if datos.estado == e %}selected{% endif %}>{{ e }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label>Sector *
+    <input name="sector" value="{{ datos.sector or '' }}" required maxlength="120">
+  </label>
+  <label>Equipo afectado *
+    <input name="equipo_afectado" value="{{ datos.equipo_afectado or '' }}" required maxlength="150">
+  </label>
+  <label>Serie del equipo
+    <input name="numero_equipo" value="{{ datos.numero_equipo or '' }}" maxlength="100">
+  </label>
+  <label>Responsable de Soporte TI *
+    <select name="responsable_ti" required>
+      <option value="" disabled {% if not datos.responsable_ti %}selected{% endif %}>Selecciona un responsable</option>
+      {% for responsable in responsables_ti %}
+      <option value="{{ responsable }}" {% if datos.responsable_ti == responsable %}selected{% endif %}>{{ responsable }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label class="ancho">Observaciones internas
+    <textarea name="observaciones" rows="5" maxlength="3000">{{ datos.observaciones or '' }}</textarea>
+  </label>
+  <label class="ancho">PDF del informe {% if pdf_obligatorio %}*{% endif %}
+    <input type="file" name="pdf" accept="application/pdf,.pdf" {% if pdf_obligatorio %}required{% endif %}>
+    <small>Solo PDF, máximo 25 MB. {% if not pdf_obligatorio %}Déjalo vacío para conservar el actual.{% endif %}</small>
+  </label>
+</div>

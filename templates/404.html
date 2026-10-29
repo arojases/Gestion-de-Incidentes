@@ -1,0 +1,8 @@
+{% extends 'base.html' %}{% block title %}No encontrado{% endblock %}{% block
+content %}
+<div class="panel vacio">
+  <h1>No encontrado</h1>
+  <p>El informe o archivo solicitado no existe.</p>
+  <a class="boton" href="{{ url_for('dashboard') }}">Volver al inicio</a>
+</div>
+{% endblock %}

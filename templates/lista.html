@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Informes{% endblock %}
+{% block content %}
+<section class="encabezado"><div><h1>Informes</h1><p>{{ informes|length }} registro(s) encontrado(s).</p></div>{% if g.usuario.rol in ('admin', 'editor') %}<a class="boton" href="{{ url_for('nuevo_informe') }}">+ Nuevo informe</a>{% endif %}</section>
+<form class="panel filtros" method="get">
+  <label>Buscar documento o informe<input name="q" value="{{ busqueda }}" placeholder="Nombre del PDF, número, sector, equipo..."></label>
+  <label>Estado<select name="estado"><option value="">Todos</option><option value="abiertos" {% if estado == 'abiertos' %}selected{% endif %}>Pendientes y en revisión</option>{% for e in estados %}<option value="{{ e }}" {% if estado == e %}selected{% endif %}>{{ e }}</option>{% endfor %}</select></label>
+  <button class="boton" type="submit">Buscar</button><a class="boton secundario" href="{{ url_for('lista_informes') }}">Limpiar</a>
+</form>
+<section class="panel tabla-scroll">
+{% if informes %}<table class="tabla-interactiva" data-page-size="10" data-search-placeholder="Filtrar los resultados visibles...">
+  <thead><tr><th>ID</th><th>Fecha</th><th>Número</th><th>Documento PDF</th><th>Sector</th><th>Equipo</th><th>Serie</th><th>Estado</th><th>Responsable TI</th><th data-no-sort>Acciones</th></tr></thead>
+  <tbody>{% for i in informes %}<tr>
+    <td>INC-{{ '%04d'|format(i.id) }}</td><td>{{ i.fecha_incidente }}</td><td>{{ i.numero_informe }}</td><td>{{ i.pdf_nombre or '—' }}</td><td>{{ i.sector }}</td><td>{{ i.equipo_afectado }}</td><td>{{ i.numero_equipo or '—' }}</td><td><span class="estado {{ i.estado|lower|replace(' ', '-') }}">{{ i.estado }}</span></td><td>{{ i.responsable_ti or '—' }}</td>
+    <td><div class="acciones-tabla acciones-iconos"><a class="accion-icono" href="{{ url_for('detalle_informe', informe_id=i.id) }}" title="Ver informe" aria-label="Ver informe"><img src="{{ url_for('static', filename='icons/ver.svg') }}" alt=""></a>{% if g.usuario.rol in ('admin', 'editor') %}<a class="accion-icono" href="{{ url_for('editar_informe', informe_id=i.id) }}" title="Editar informe" aria-label="Editar informe"><img src="{{ url_for('static', filename='icons/editar.svg') }}" alt=""></a>{% endif %}<a class="accion-icono" target="_blank" href="{{ url_for('abrir_pdf', informe_id=i.id) }}" title="Abrir PDF" aria-label="Abrir PDF"><img src="{{ url_for('static', filename='icons/pdf.svg') }}" alt=""></a>{% if g.usuario.rol == 'admin' %}<form method="post" action="{{ url_for('eliminar_informe', informe_id=i.id) }}" onsubmit="return confirm('¿Seguro que deseas eliminar este informe? Esta acción no se puede deshacer.')"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button class="accion-icono peligro-icono" title="Eliminar informe" aria-label="Eliminar informe"><img src="{{ url_for('static', filename='icons/eliminar.svg') }}" alt=""></button></form>{% endif %}</div></td>
+  </tr>{% endfor %}</tbody>
+</table>{% else %}<div class="vacio">No se encontraron informes.</div>{% endif %}
+</section>{% endblock %}

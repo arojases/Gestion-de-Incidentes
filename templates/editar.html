@@ -1,0 +1,23 @@
+{% extends 'base.html' %}{% block title %}Editar informe{% endblock %} {% block
+content %}
+<div class="encabezado">
+  <div>
+    <h1>Editar INC-{{ '%04d'|format(informe.id) }}</h1>
+    <p>Modifica la ficha o reemplaza el PDF.</p>
+  </div>
+</div>
+<form class="panel formulario" method="post" enctype="multipart/form-data">
+  {% set datos=informe %}{% set pdf_obligatorio=false %}{% include
+  '_formulario.html' %}
+  <div class="archivo-actual">
+    PDF actual: <strong>{{ informe.pdf_nombre }}</strong>
+  </div>
+  <div class="acciones">
+    <a
+      class="boton secundario"
+      href="{{ url_for('detalle_informe', informe_id=informe.id) }}"
+      >Cancelar</a
+    ><button class="boton" type="submit">Guardar cambios</button>
+  </div>
+</form>
+{% endblock %}

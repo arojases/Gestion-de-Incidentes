@@ -1,0 +1,78 @@
+{% extends 'base.html' %} {% block title %}Inicio · Organizar de Informes de Incidentes{% endblock %}
+{% block content %}
+<section class="encabezado">
+  <div>
+    <h1>Panel principal</h1>
+    <p>Resumen de informes preliminares recibidos.</p>
+  </div>
+  {% if g.usuario.rol in ('admin', 'editor') %}<a class="boton grande" href="{{ url_for('nuevo_informe') }}"
+    >+ Crear nuevo informe</a
+  >{% endif %}
+</section>
+<section class="tarjetas kpi-tarjetas">
+  <a class="tarjeta kpi" href="{{ url_for('lista_informes') }}"><span>Total</span><strong>{{ total }}</strong><small>Ver todos →</small></a>
+  <a class="tarjeta pendiente kpi" href="{{ url_for('lista_informes', estado='Pendiente') }}">
+    <span>Pendientes</span><strong>{{ conteos['Pendiente'] }}</strong>
+  <small>Ver pendientes →</small></a>
+  <a class="tarjeta revision kpi" href="{{ url_for('lista_informes', estado='En revisión') }}">
+    <span>En revisión</span><strong>{{ conteos['En revisión'] }}</strong>
+  <small>Ver en revisión →</small></a>
+  <a class="tarjeta archivado kpi" href="{{ url_for('lista_informes', estado='Archivado') }}">
+    <span>Archivados</span><strong>{{ conteos['Archivado'] }}</strong>
+  <small>Ver archivados →</small></a>
+</section>
+<section class="panel">
+  <div class="titulo-panel">
+    <h2>Últimos 5 informes</h2>
+    <a href="{{ url_for('lista_informes') }}">Ver todos</a>
+  </div>
+  {% if ultimos %}
+  <div class="tabla-scroll">
+    <table class="tabla-interactiva" data-page-size="5" data-search-placeholder="Filtrar últimos informes...">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Fecha</th>
+          <th>Número de informe</th>
+          <th>Sector</th>
+          <th>Equipo</th>
+          <th>Estado</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for i in ultimos %}
+        <tr>
+          <td>INC-{{ '%04d'|format(i.id) }}</td>
+          <td>{{ i.fecha_incidente }}</td>
+          <td>{{ i.numero_informe }}</td>
+          <td>{{ i.sector }}</td>
+          <td>{{ i.equipo_afectado }}</td>
+          <td>
+            <span
+              class="estado {{ i.estado|lower|replace(' ', '-')|replace('ó','o') }}"
+              >{{ i.estado }}</span
+            >
+          </td>
+          <td>
+            <a
+              class="boton secundario pequeno"
+              href="{{ url_for('detalle_informe', informe_id=i.id) }}"
+              >Ver</a
+            >
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="vacio">
+    <p>Aún no hay informes registrados.</p>
+    {% if g.usuario.rol in ('admin', 'editor') %}<a class="boton" href="{{ url_for('nuevo_informe') }}"
+      >Registrar el primero</a
+    >{% endif %}
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

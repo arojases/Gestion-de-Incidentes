@@ -1,0 +1,30 @@
+# Datos y secretos locales
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+*.log
+*.pdf
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+uploads/*
+!uploads/.gitkeep
+backups/
+respaldos/
+# Archivos generados
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.security-deps/
+.security-check-*/
+.coverage
+htmlcov/
+.idea/
+.vscode/
+Thumbs.db
+.DS_Store
