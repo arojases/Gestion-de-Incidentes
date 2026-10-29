@@ -68,12 +68,12 @@ endblock %} {% block content %}
     ><strong>{{ informe.fecha_modificacion }}</strong>
   </div>
 </section>
-<section class="panel"><div class="titulo-panel"><h2>Historial de cambios</h2></div>{% if historial %}<div class="tabla-scroll"><table><thead><tr><th>Fecha</th><th>Usuario</th><th>Acción</th><th>Detalle</th></tr></thead><tbody>{% for h in historial %}<tr><td>{{ h.fecha }}</td><td>{{ h.usuario_nombre }}</td><td>{{ h.accion|capitalize }}</td><td><details><summary>Ver cambios</summary><pre>{{ (h.detalle|detalle_auditoria)|tojson(indent=2) }}</pre></details></td></tr>{% endfor %}</tbody></table></div>{% else %}<p class="vacio">Este informe aún no tiene eventos de auditoría.</p>{% endif %}</section>
+{% if g.usuario.rol == 'admin' %}<section class="panel"><div class="titulo-panel"><h2>Historial de cambios</h2></div>{% if historial %}<div class="tabla-scroll"><table><thead><tr><th>Fecha</th><th>Usuario</th><th>Acción</th><th>Detalle</th></tr></thead><tbody>{% for h in historial %}<tr><td>{{ h.fecha }}</td><td>{{ h.usuario_nombre }}</td><td>{{ h.accion|capitalize }}</td><td><details><summary>Ver cambios</summary><pre>{{ (h.detalle|detalle_auditoria)|tojson(indent=2) }}</pre></details></td></tr>{% endfor %}</tbody></table></div>{% else %}<p class="vacio">Este informe aún no tiene eventos de auditoría.</p>{% endif %}</section>{% endif %}
 <div class="acciones">
   <a class="boton secundario" href="{{ url_for('lista_informes') }}"
     >Volver a informes</a
   >
-  {% if g.usuario.rol == 'admin' %}<form
+  {% if g.usuario.rol in ('admin', 'editor') %}<form
     method="post"
     action="{{ url_for('eliminar_informe', informe_id=informe.id) }}"
     onsubmit="

@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import shutil
 import tempfile
+from crear_usuario_demo import clave_demo, crear_usuario
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -69,6 +70,7 @@ def main():
         sectors = ("Laboratorio A", "Sala de pruebas B", "Oficina de ejemplo C", "Taller de pruebas D")
         with module.get_db() as db:
             db.execute("UPDATE usuarios SET nombre='Administrador de demostracion'")
+            crear_usuario(db, clave_demo(), module.ahora())
             for i in range(1, 9):
                 numero = f"DEMO-{i:04d}"
                 sector = sectors[(i - 1) % len(sectors)]
@@ -105,7 +107,8 @@ def main():
         os.replace(folder / "incidentes.db", database)
         shutil.copytree(folder / "uploads", uploads, dirs_exist_ok=True)
         (uploads / ".gitkeep").touch()
-    print("Demo creada: 8 informes, 8 PDF, 8 eventos y la cuenta admin.demo.")
+    print("Demo creada: 8 informes, 8 PDF, 8 eventos y las cuentas admin.demo y user.demo.")
+    print("La clave de user.demo esta en USER_DEMO_PASSWORD de .env.demo.")
     print("Usa la clave INITIAL_ADMIN_PASSWORD configurada; deberas cambiarla al ingresar.")
 
 

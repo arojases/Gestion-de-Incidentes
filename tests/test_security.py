@@ -1,5 +1,6 @@
 """Security regression checks using an isolated application and database."""
 import importlib.util
+import io
 import os
 from pathlib import Path
 import secrets
@@ -84,6 +85,38 @@ class SecurityTests(unittest.TestCase):
         response = self.client.get("/login")
         self.assertEqual(response.headers["Cache-Control"], "no-store")
         self.assertEqual(response.headers["X-Content-Type-Options"], "nosniff")
+
+    def test_editor_has_report_crud_but_no_admin_access(self):
+        self.login()
+        with self.module.get_db() as db:
+            db.execute("UPDATE usuarios SET debe_cambiar_password=0, rol='editor'")
+        with self.client.session_transaction() as session:
+            token = session["csrf_token"]
+        self.assertEqual(self.client.get("/").status_code, 200)
+        for route in ("/usuarios", "/historial", "/estadisticas"):
+            self.assertEqual(self.client.get(route).status_code, 403)
+        for route in ("/usuarios", "/usuarios/1/actualizar"):
+            self.assertEqual(self.client.post(route, data={"csrf_token": token}).status_code, 403)
+        data = {"csrf_token": token, "numero_informe": "CRUD-DEMO", "fecha_incidente": "2026-01-01",
+                "estado": "Pendiente", "sector": "Prueba", "equipo_afectado": "Equipo de prueba",
+                "responsable_ti": "Responsable de prueba"}
+        response = self.client.post("/informes/nuevo", data={**data,
+            "pdf": (io.BytesIO(b"%PDF-1.4\nfictional fixture"), "prueba.pdf")})
+        self.assertEqual(response.status_code, 302)
+        detail = self.client.get("/informes/1")
+        self.assertEqual(detail.status_code, 200)
+        self.assertNotIn(b"Historial de cambios", detail.data)
+        self.assertIn(b"Eliminar informe", detail.data)
+        with self.client.get("/informes/1/pdf") as pdf_response:
+            self.assertEqual(pdf_response.status_code, 200)
+        response = self.client.post("/informes/1/editar", data={**data, "estado": "Archivado"})
+        self.assertEqual(response.status_code, 302)
+        with self.module.get_db() as db:
+            self.assertEqual(db.execute("SELECT estado FROM informes WHERE id=1").fetchone()[0], "Archivado")
+        self.assertEqual(self.client.post("/informes/1/eliminar", data={"csrf_token": token}).status_code, 302)
+        self.assertEqual(self.client.get("/informes/1").status_code, 404)
+        with self.module.get_db() as db:
+            self.assertEqual(db.execute("SELECT COUNT(*) FROM auditoria WHERE entidad='informe'").fetchone()[0], 3)
 
     def test_missing_secret_fails_at_startup(self):
         with patch.dict(os.environ, {"SECRET_KEY": ""}):

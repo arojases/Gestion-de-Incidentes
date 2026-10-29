@@ -192,7 +192,9 @@ def nuevo_informe():
 @login_requerido
 def detalle_informe(informe_id):
     informe=obtener_informe(informe_id)
-    with get_db() as db: historial=db.execute("SELECT * FROM auditoria WHERE entidad='informe' AND entidad_id=? ORDER BY id DESC",(informe_id,)).fetchall()
+    historial = []
+    if g.usuario["rol"] == "admin":
+        with get_db() as db: historial=db.execute("SELECT * FROM auditoria WHERE entidad='informe' AND entidad_id=? ORDER BY id DESC",(informe_id,)).fetchall()
     return render_template("detalle.html",informe=informe,historial=historial)
 
 @app.route("/informes/<int:informe_id>/editar",methods=("GET","POST"))
@@ -216,7 +218,7 @@ def editar_informe(informe_id):
     return render_template("editar.html",informe=informe,estados=ESTADOS)
 
 @app.post("/informes/<int:informe_id>/eliminar")
-@roles_requeridos("admin")
+@roles_requeridos("admin","editor")
 def eliminar_informe(informe_id):
     informe=obtener_informe(informe_id)
     with get_db() as db: registrar_auditoria(db,"eliminacion","informe",informe_id,{c:informe[c] for c in CAMPOS_AUDITADOS}); db.execute("DELETE FROM informes WHERE id=?",(informe_id,))

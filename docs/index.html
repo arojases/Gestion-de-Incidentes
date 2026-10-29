@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Explora el gestor de informes de incidentes TI de Ariel Rojas con datos ficticios y sin iniciar sesión.">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Incidentes TI · Demo de Ariel Rojas</title>
+  <link rel="stylesheet" href="demo.css">
+  <script src="demo.js" defer></script>
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="#inicio"><span class="brand-icon" aria-hidden="true">i.</span> Incidentes TI</a><nav aria-label="Principal"><a href="#informes">Explorar informes</a><a href="https://github.com/arojases/Incidentes" target="_blank" rel="noopener noreferrer">Ver código ↗</a></nav></header>
+  <main id="inicio">
+    <section class="intro"><div><p class="eyebrow">PORTAFOLIO / ARIEL ROJAS</p><h1>Cada incidente,<br>con su historia.</h1><p class="lead">Una herramienta para registrar, encontrar y dar seguimiento a los informes de soporte TI. Explora el flujo con casos de ejemplo.</p><a class="button dark" href="#informes">Explorar la demo <span aria-hidden="true">↓</span></a></div><aside class="project-note"><span class="tag">Proyecto aplicado</span><h2>De una necesidad laboral<br>a una herramienta funcional.</h2><p>Esta edición presenta las funciones principales de un proyecto que cuenta con una versión actualizada en uso en mi trabajo.</p><p class="small">Python · Flask · SQLite · JavaScript</p></aside></section>
+    <section class="workspace" aria-label="Demostración interactiva">
+      <div class="workspace-header"><div><p class="eyebrow">VISTA GENERAL</p><h2>Panel de seguimiento</h2></div><span class="demo-label"><span aria-hidden="true">●</span> Demo · Datos ficticios</span></div>
+      <div class="metrics" aria-label="Resumen de informes"><article><span>Total de informes</span><strong id="total">8</strong><small>Casos en esta demostración</small></article><article><span>Pendientes</span><strong id="pending">3</strong><small>Por revisar</small></article><article><span>En revisión</span><strong id="review">3</strong><small>En seguimiento</small></article><article><span>Archivados</span><strong id="archived">2</strong><small>Seguimiento finalizado</small></article></div>
+      <section class="reports" id="informes"><div class="section-heading"><div><h2>Informes de incidentes</h2><p>Busca un caso y abre su detalle para explorar el seguimiento.</p></div><button class="button outline" id="reset" type="button">Restablecer demo</button></div>
+        <div class="filters"><label>Buscar informe<input type="search" id="search" placeholder="Número, equipo o sector…" autocomplete="off"></label><label>Estado<select id="status"><option value="">Todos los estados</option>Pendiente</option><option>En revisión</option><option>Archivado</option></select></label><span id="result-count" role="status" aria-live="polite"></span></div>
+        <div class="table-wrap"><table><caption class="sr-only">Informes ficticios de incidentes TI</caption><thead><tr><th scope="col">Informe / equipo</th><th scope="col">Sector</th><th scope="col">Fecha</th><th scope="col">Estado</th><th scope="col"><span class="sr-only">Acciones</span></th></tr></thead><tbody id="rows"></tbody></table></div>
+        <p id="empty" hidden>No hay informes con esos filtros. Prueba otra búsqueda.</p>
+      </section>
+      <p class="workspace-foot">Puedes simular cambios de estado. Los cambios duran hasta que recargues o restablezcas la demo.</p>
+    </section>
+    <section class="about"><p class="eyebrow">EL PROYECTO COMPLETO</p><h2>Más contexto. Mejor seguimiento.</h2><div class="about-grid"><article><span>01 / REGISTRO</span><h3>La información reunida</h3><p>Una ficha por incidente con el equipo, sector, responsable y su informe PDF asociado.</p></article><article><span>02 / TRAZABILIDAD</span><h3>Los cambios tienen historia</h3><p>El historial permite consultar quién realizó una acción y qué información cambió.</p></article><article><span>03 / ACCESO</span><h3>Permisos según la tarea</h3><p>Administrador, editor y lector cuentan con distintos permisos en la aplicación completa.</p></article></div><p class="scope">Esta demo estática simula la consulta y el cambio de estados. Los usuarios, adjuntos y la auditoría del servidor pertenecen a la aplicación completa.</p></section>
+  </main>
+  <footer><span>Ariel Rojas <span aria-hidden="true">/</span> Proyecto de portafolio</span><a href="https://github.com/arojases/Incidentes" target="_blank" rel="noopener noreferrer">Conocer el código ↗</a></footer>
+  <dialog id="detail" aria-labelledby="detail-title"><div class="dialog-head"><p class="eyebrow">DETALLE DEL INFORME</p><button id="close" class="close" type="button" aria-label="Cerrar detalle">×</button></div><h2 id="detail-title"></h2><p id="detail-description"></p><dl id="detail-fields"></dl><label class="state-label">Simular cambio de estado<select id="detail-status"><option>Pendiente</option><option>En revisión</option><option>Archivado</option></select></label><h3>Historial de ejemplo</h3><ul id="history"></ul><p class="small">Información ficticia. Esta acción solo modifica la demostración en tu navegador.</p></dialog>
+  <p class="toast" id="message" role="status" aria-live="polite"></p>
+  <noscript><p>Activa JavaScript para explorar los informes de esta demostración.</p></noscript>
+</body>
+</html>

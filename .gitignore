@@ -29,3 +29,6 @@ htmlcov/
 .vscode/
 Thumbs.db
 .DS_Store
+Incidentes-GitHub.zip
+.preview-*/
+.preview-*.cjs
