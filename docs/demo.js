@@ -68,10 +68,10 @@ $("detail-status").addEventListener("change", (event) => {
   const next = event.target.value;
   if (!Object.hasOwn(states, next) || !selected) return;
   selected.history.unshift(`${selected.state} → ${next} · Cambio simulado`);
-  selected.state = next; edits++; $("activity").prepend(element("li", `${selected.id}: ${next} ? Administrador de demostraci?n`)); renderHistory(); render(); announce("Estado actualizado en la demostración.");
+  selected.state = next; edits++; $("activity").prepend(element("li", `${selected.id}: ${next} · Administrador de demostración`)); renderHistory(); render(); announce("Estado actualizado en la demostración.");
 });
 $("reset").addEventListener("click", () => {
-  edits = 0; $("activity").replaceChildren(element("li", "Demostraci?n restablecida.")); resetData(); $("search").value = ""; $("status").value = ""; render(); announce("La demo volvió a sus datos iniciales.");
+  edits = 0; $("activity").replaceChildren(element("li", "Demostración restablecida.")); resetData(); $("search").value = ""; $("status").value = ""; render(); announce("La demo volvió a sus datos iniciales.");
 });
 let edits = 0;
 function renderStats() {
@@ -90,13 +90,13 @@ function renderStats() {
   $("latest-open").disabled = !latest;
   $("latest-open").onclick = () => latest && openDetail(latest.id);
   const users = [
-    {name:"Administrador de demostraci?n", handle:"admin.demo", role:"Administrador", total:reports.length, solved:solved.length, edits},
-    {name:"Usuario de demostraci?n", handle:"user.demo", role:"Editor", total:0, solved:0, edits:0}
+    {name:"Administrador de demostración", handle:"admin.demo", role:"Administrador", total:reports.length, solved:solved.length, edits},
+    {name:"Usuario de demostración", handle:"user.demo", role:"Editor", total:0, solved:0, edits:0}
   ];
   $("user-bars").replaceChildren();
   users.forEach(user => {
     const row = element("div", undefined, "bar-row");
-    const name = element("div"); name.append(element("strong", user.name), element("small", `@${user.handle} ? ${user.role}`));
+    const name = element("div"); name.append(element("strong", user.name), element("small", `@${user.handle} · ${user.role}`));
     const bars = element("div", undefined, "bars");
     [["Ingresados", user.total], ["Solucionados", user.solved]].forEach(([label, count]) => {
       const line = element("div", undefined, "bar-line");
